@@ -1,5 +1,5 @@
 ### EX4 Implementation of Cluster and Visitor Segmentation for Navigation patterns
-### DATE: 22/05/2026
+### DATE: 04.09.26
 ### AIM: To implement Cluster and Visitor Segmentation for Navigation patterns in Python.
 ### Description:
 <div align= "justify">Cluster visitor segmentation refers to the process of grouping or categorizing visitors to a website, 
@@ -13,76 +13,68 @@
 3) Segment Visitors by iterating through the dictionary and filter the visitors into respective age groups.
 4) Visualize the result using matplotlib.
 
-### Program 1:
-```
+### Program:
+```python
+# Visitor segmentation based on characteristics
+# read the data
+
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
+df=pd.read_csv(r"C:\Users\admin\Downloads\clustervisitor (1).csv")
+df
+cluster = {"Young": (df['Age'] <= 30),"Middle": ((df['Age'] > 30) & (df['Age'] <= 50)),"Old": (df['Age'] > 50)}
 
-df=pd.read_csv('/content/clustervisitor.csv')
-
-cluster={'Young':(df['Age']<=30),'Middle':((df['Age'])>30 & (df['Age']<=50)),'Old':(df['Age']>50)}
 count=[]
 for group,condition in cluster.items():
-  visitors=df[condition]
-  count.append(len(visitors))
-  print(f"The Visitors on {group} are")
-  print(visitors)
-  print("count =",len(visitors))
+    visitors=df[condition]
+    count.append(len(visitors))
+    print(f"The visitors on {group} age are")
+    print(visitors)
+    print("count=",len(visitors))
 
-
-```
-### Output:
-<img width="960" height="930" alt="image" src="https://github.com/user-attachments/assets/8a10c136-d032-4149-9759-5dac2456d668" />
-
-### Visualization:
-```
+import matplotlib.pyplot as plt
 plt.figure(figsize=(8, 6))
-plt.bar(['Young','Middle','Old'], count, color='skyblue')
+plt.bar(['Young','Middle','Old'],count,color='skyblue')
 plt.xlabel('Age Groups')
 plt.ylabel('Number of Visitors')
 plt.title('Visitor Distribution Across Age Groups')
 plt.show()
+
 ```
 ### Output:
-<img width="1052" height="580" alt="image" src="https://github.com/user-attachments/assets/d3578674-eaff-46c2-984a-2b0c4fb29eed" />
 
-### Program 2:
-```
-import pandas as pd
+<img width="501" height="753" alt="image" src="https://github.com/user-attachments/assets/01b86cc0-06f6-4ee8-a4f0-4b7784324280" />
+
+<img width="849" height="613" alt="image" src="https://github.com/user-attachments/assets/35416cc4-9b90-45c5-be81-71ae8c677e28" />
+
+### Visualization:
+```python
+# Create a list to store counts of visitors in each age group
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
-
-df=pd.read_csv('/content/clustervisitor.csv')
-
-cluster={'Young':(df['Age']<=30),'Middle':((df['Age'])>30 & (df['Age']<=50)),'Old':(df['Age']>50)}
 
 df1=df['Age']
 df2=df['Income']
 df3=pd.concat([df1,df2],axis=1)
 s=StandardScaler()
 newdf=s.fit_transform(df3)
-K=KMeans(n_clusters=4,random_state=23)
-df3['cluster']=K.fit_predict(newdf)
+k=KMeans(n_clusters=4,random_state=55)
+df3['cluster']=k.fit_predict(newdf)
 df3
 
-```
-### Output:
-<img width="764" height="919" alt="image" src="https://github.com/user-attachments/assets/5b2fc2ea-026c-4b7f-9789-570416b7db9d" />
-
-### Visualization:
-```
+import matplotlib.pyplot as plt
 plt.figure(figsize=(8,6))
-plt.scatter(x=df3['Age'],y=df3['Income'],c= df3['cluster'])
+plt.scatter(x=df3['Age'],y=df3['Income'],c=df3['cluster'])
 plt.xlabel('Age')
 plt.ylabel('Income')
-plt.title('Kmeans Cluster')
+plt.title('Visitor Distribution in Different Clusters')
 plt.show()
+
 ```
 ### Output:
-<img width="1034" height="634" alt="Screenshot 2026-05-22 111754" src="https://github.com/user-attachments/assets/4b4dd153-61bd-4354-97d2-60d6df58faee" />
+<img width="340" height="829" alt="image" src="https://github.com/user-attachments/assets/a6bc5cc2-0d34-4c19-b7fa-8758beee12e3" />
+<img width="916" height="677" alt="image" src="https://github.com/user-attachments/assets/1ad0ca74-c9d2-4f05-991c-109772c78d39" />
+
 
 ### Result:
-Cluster and Visitor Segmentation is used to group website visitors based on navigation patterns and age groups to better understand user behavior and improve services.
+Implementation of Cluster and Visitor Segmentation for Navigation patterns hasbeen done successfully.
