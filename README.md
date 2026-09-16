@@ -1,5 +1,6 @@
 ### EX4 Implementation of Cluster and Visitor Segmentation for Navigation patterns
-### DATE: 04.09.26
+### DATE: 27/08/26
+### REG NO : 212223230163
 ### AIM: To implement Cluster and Visitor Segmentation for Navigation patterns in Python.
 ### Description:
 <div align= "justify">Cluster visitor segmentation refers to the process of grouping or categorizing visitors to a website, 
@@ -15,66 +16,190 @@
 
 ### Program:
 ```python
-# Visitor segmentation based on characteristics
-# read the data
-
 import pandas as pd
-df=pd.read_csv(r"C:\Users\admin\Downloads\clustervisitor (1).csv")
-df
-cluster = {"Young": (df['Age'] <= 30),"Middle": ((df['Age'] > 30) & (df['Age'] <= 50)),"Old": (df['Age'] > 50)}
-
-count=[]
-for group,condition in cluster.items():
-    visitors=df[condition]
-    count.append(len(visitors))
-    print(f"The visitors on {group} age are")
-    print(visitors)
-    print("count=",len(visitors))
-
 import matplotlib.pyplot as plt
-plt.figure(figsize=(8, 6))
-plt.bar(['Young','Middle','Old'],count,color='skyblue')
-plt.xlabel('Age Groups')
-plt.ylabel('Number of Visitors')
-plt.title('Visitor Distribution Across Age Groups')
-plt.show()
+
+# Read CSV file
+df = pd.read_csv("clustervisitor.csv")
+
+# Display the visitor dataset
+print("Visitor Dataset:")
+print(df)
+
+# Select the Age feature
+ages = df["Age"].tolist()
+
+# Number of clusters
+K = 3
+
+# Initial centroids
+centroids = [
+    min(ages),
+    sum(ages) / len(ages),
+    max(ages)
+]
+
+# Repeat clustering process
+for iteration in range(10):
+
+    clusters = [[], [], []]
+
+    # Assign each visitor to the nearest centroid
+    for age in ages:
+
+        distances = [
+            abs(age - centroid)
+            for centroid in centroids
+        ]
+
+        nearest_cluster = distances.index(
+            min(distances)
+        )
+
+        clusters[nearest_cluster].append(age)
+
+    # Calculate new centroids
+    new_centroids = []
+
+    for i in range(K):
+
+        if len(clusters[i]) > 0:
+
+            new_centroid = (
+                sum(clusters[i])
+                / len(clusters[i])
+            )
+
+        else:
+
+            new_centroid = centroids[i]
+
+        new_centroids.append(new_centroid)
+
+    # Stop when centroids do not change
+    if new_centroids == centroids:
+        break
+
+    centroids = new_centroids
+
+
+# Assign final cluster labels to visitors
+visitor_clusters = []
+
+for age in ages:
+
+    distances = [
+        abs(age - centroid)
+        for centroid in centroids
+    ]
+
+    nearest_cluster = distances.index(
+        min(distances)
+    )
+
+    visitor_clusters.append(
+        nearest_cluster
+    )
+
+
+# Add cluster labels to the DataFrame
+df["Cluster"] = visitor_clusters
+
+
+# Display visitor details with cluster labels
+print("\nVisitor Details with Clusters:")
+print(df)
+
+
+# Display cluster-wise visitor details
+for i in range(K):
+
+    print(f"\nVisitors in Cluster {i}:")
+
+    print(
+        df[df["Cluster"] == i]
+    )
+
+
+# Display final centroids
+print("\nFinal Centroids:")
+
+for i in range(K):
+
+    print(
+        f"Cluster {i}: "
+        f"{centroids[i]:.2f}"
+    )
+
+
+# Visualize the clusters
+for i in range(K):
+
+    cluster_data = df[
+        df["Cluster"] == i
+    ]
+
+    # Plot visitor points
+    plt.scatter(
+        cluster_data["Age"],
+        cluster_data["Cluster"],
+        label=f"Cluster {i}",
+        s=100
+    )
+
+    # Display the age value above each dot
+    for _, row in cluster_data.iterrows():
+
+        plt.annotate(
+            str(row["Age"]),
+            (
+                row["Age"],
+                row["Cluster"]
+            ),
+            textcoords="offset points",
+            xytext=(0, 10),
+            ha="center"
+        )
 
 ```
-### Output:
-
-<img width="501" height="753" alt="image" src="https://github.com/user-attachments/assets/01b86cc0-06f6-4ee8-a4f0-4b7784324280" />
-
-<img width="849" height="613" alt="image" src="https://github.com/user-attachments/assets/35416cc4-9b90-45c5-be81-71ae8c677e28" />
 
 ### Visualization:
 ```python
-# Create a list to store counts of visitors in each age group
+# Display centroids
+plt.scatter(
+    centroids,
+    [0, 1, 2],
+    marker="X",
+    s=200,
+    label="Centroids"
+)
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
 
-df1=df['Age']
-df2=df['Income']
-df3=pd.concat([df1,df2],axis=1)
-s=StandardScaler()
-newdf=s.fit_transform(df3)
-k=KMeans(n_clusters=4,random_state=55)
-df3['cluster']=k.fit_predict(newdf)
-df3
+plt.xlabel("Age")
+plt.ylabel("Cluster")
+plt.title(
+    "Visitor Segmentation using K-Means"
+)
 
-import matplotlib.pyplot as plt
-plt.figure(figsize=(8,6))
-plt.scatter(x=df3['Age'],y=df3['Income'],c=df3['cluster'])
-plt.xlabel('Age')
-plt.ylabel('Income')
-plt.title('Visitor Distribution in Different Clusters')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
 plt.show()
+
 
 ```
 ### Output:
-<img width="340" height="829" alt="image" src="https://github.com/user-attachments/assets/a6bc5cc2-0d34-4c19-b7fa-8758beee12e3" />
-<img width="916" height="677" alt="image" src="https://github.com/user-attachments/assets/1ad0ca74-c9d2-4f05-991c-109772c78d39" />
+<img width="1076" height="545" alt="image" src="https://github.com/user-attachments/assets/7b974b8c-8af0-4bda-96c9-d3ae3c697a35" />
 
+<img width="472" height="247" alt="image" src="https://github.com/user-attachments/assets/7c375ab3-564b-49e9-927b-cb2915f89f0d" />
+
+<img width="465" height="257" alt="image" src="https://github.com/user-attachments/assets/5e4800dd-ce1f-4437-83b6-36599b31f5a4" />
+
+<img width="415" height="222" alt="image" src="https://github.com/user-attachments/assets/97302a09-f5a4-442c-9646-ffa537702b12" />
+
+<img width="182" height="125" alt="image" src="https://github.com/user-attachments/assets/6b2aaa36-21f7-4a97-b1f0-b7423f7da8c5" />
+
+<img width="1041" height="671" alt="image" src="https://github.com/user-attachments/assets/bb58b9f6-5c53-4043-a1f0-34293aea3c78" />
 
 ### Result:
-Implementation of Cluster and Visitor Segmentation for Navigation patterns hasbeen done successfully.
+Thus, the K-Means clustering algorithm was successfully implemented, and the visitors were grouped into different clusters and visualized using a scatter plot.
